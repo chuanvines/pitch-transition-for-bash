@@ -3,12 +3,13 @@
 # How To Use?
 use bash code:
 
-curl -s -o ./pitchtransition.sh "https://raw.githubusercontent.com/chuanvines/pitch-transition-for-bash/refs/heads/main/pitchtransition"
+curl -s -o ./pitchtransition "https://raw.githubusercontent.com/chuanvines/pitch-transition-for-bash/refs/heads/main/pitchtransition"
 
-sed -i 's/\r$//' pitchtransition.sh
-chmod +x pitchtransition.sh
+sed -i 's/\r$//' pitchtransition
 
-eval $(./pitchtransition.sh input.wav output.wav --pitch 0 24)
+chmod +x pitchtransition
+
+eval $(./pitchtransition input.wav output.wav --pitch 0 24)
 
 # Features:
 input audio
