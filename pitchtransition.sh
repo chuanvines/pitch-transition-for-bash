@@ -1,0 +1,49 @@
+# Assign input and output
+INPUT="$1"
+OUTPUT="$2"
+shift 2 # Remove input and output from the argument list
+
+# Verify input exists
+if [ ! -f "$INPUT" ]; then
+    echo "Error: Input file '$INPUT' not found."
+    exit 1
+fi
+
+# Fetch duration
+DURATION=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$INPUT")
+
+# Initialize the bend effect string
+BEND_EFFECTS=""
+
+# Loop through remaining arguments to parse --pitch flags
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --pitch)
+            # $2 is start, $3 is end
+            # You specified the input format is --pitch 0 24 --pitch 0 12
+            START_SEMI="$2"
+            END_SEMI="$3"
+            
+            # Convert to cents (1 semitone = 100 cents)
+            # We use the end value for the bend calculation
+            END_CENTS=$((END_SEMI * 100))
+            
+            # Append this bend to the string
+            BEND_EFFECTS="$BEND_EFFECTS bend 0,$END_CENTS,$DURATION"
+            
+            shift 3
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
+# Construct the final SoX command
+SOX_CMD="sox $INPUT $OUTPUT pad 0 0.1 $BEND_EFFECTS"
+
+# Output the command
+echo "$SOX_CMD"
+
+# To execute, uncomment the next line:
+# $SOX_CMD
