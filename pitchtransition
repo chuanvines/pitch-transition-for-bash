@@ -5,6 +5,12 @@ FLAG="$3"        # --pitch
 START_SEMI="$4"  # 0
 END_SEMI="$5"    # 24
 
+# Detect if the --pitch flag is missing or incorrect
+if [ "$FLAG" != "--pitch" ]; then
+    echo "ERROR: The --pitch flag is required as the third argument. Example: ./pitchtransition input.wav output.wav --pitch 0 24"
+    exit 1
+fi
+
 # Verify that the input file exists to avoid soxi errors
 if [ ! -f "$INPUT" ]; then
     echo "Error: Input file '$INPUT' not found."
