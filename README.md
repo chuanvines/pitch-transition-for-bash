@@ -12,7 +12,11 @@ eval $(./pitchtransition.sh input.wav output.wav --pitch 0 24)
 
 # Features:
 input audio
+
 output audio
+
 --pitch (you can multiple pitches like: --pitch 0 24 --pitch 0 12)
+
 start_pitch (WORK IN PROGRESS)
+
 end_pitch
