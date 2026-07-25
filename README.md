@@ -3,7 +3,7 @@
 # How To Use?
 use bash code:
 
-curl -s -o ./pitchtransition.sh "https://cdn.discordapp.com/attachments/1519401729685454908/1530601490127912970/pitchtransition.sh?ex=6a662b38&is=6a64d9b8&hm=304d5892381267d6daa0b65f8dd5672ab133ce7d543a1e6166e788906672fc9f&"
+curl -s -o ./pitchtransition.sh "https://raw.githubusercontent.com/chuanvines/pitch-transition-for-bash/refs/heads/main/pitchtransition"
 
 sed -i 's/\r$//' pitchtransition.sh
 chmod +x pitchtransition.sh
