@@ -1,50 +1,26 @@
-# Assign input and output
+# Assign arguments to variables
 INPUT="$1"
 OUTPUT="$2"
-shift 2 # Remove input and output from the argument list
+FLAG="$3"        # --pitch
+START_SEMI="$4"  # 0
+END_SEMI="$5"    # 24
 
-# Verify input exists
+# Verify that the input file exists to avoid soxi errors
 if [ ! -f "$INPUT" ]; then
     echo "Error: Input file '$INPUT' not found."
     exit 1
 fi
 
-# Fetch duration
-DURATION=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$INPUT")
+# Fetch the exact duration of the input file using soxi
+d=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $INPUT)
 
-# Initialize the bend effect string
-BEND_EFFECTS=""
+start=$START_SEMI
+end=$END_SEMI
 
-# Loop through remaining arguments to parse --pitch flags
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        --pitch)
-            # $2 is start, $3 is end
-            # You specified the input format is --pitch 0 24 --pitch 0 12
-            START_SEMI="$2"
-            END_SEMI="$3"
-            
-            # Convert to cents (1 semitone = 100 cents)
-            # We use the end value for the bend calculation
-            START_CENTS=$((START_SEMI * 100))
-            END_CENTS=$((END_SEMI * 100))
-            
-            # Append this bend to the string
-            BEND_EFFECTS="$BEND_EFFECTS reverse bend 0,$START_CENTS,$DURATION reverse bend 0,$END_CENTS,$DURATION"
-            
-            shift 3
-            ;;
-        *)
-            shift
-            ;;
-    esac
-done
+for i in $(seq 0 0.01 $d); do
+   echo "$i rubberband pitch 2^((($i/$d)*($end-$start)+$start)/12);"
+done >> pitchtransition.txt
 
-# Construct the final SoX command
-SOX_CMD="sox $INPUT $OUTPUT pad 0 0 $BEND_EFFECTS"
+FFMPEG_CMD="ffmpeg -i "$INPUT" -af "asendcmd=f=pitchtransition.txt" $OUTPUT"
 
-# Output the command
-echo "$SOX_CMD"
-
-# To execute, uncomment the next line:
-# $SOX_CMD
+$FFMPEG_CMD
