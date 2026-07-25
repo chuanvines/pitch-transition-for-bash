@@ -21,6 +21,6 @@ for i in $(seq 0 0.01 $d); do
    echo "$i rubberband pitch 2^((($i/$d)*($end-$start)+$start)/12);"
 done >> pitchtransition.txt
 
-FFMPEG_CMD="ffmpeg -i "$INPUT" -af "asendcmd=f=pitchtransition.txt" $OUTPUT"
+FFMPEG_CMD="ffmpeg -i "$INPUT" -af "asendcmd=f=pitchtransition.txt,rubberband=phase=712923000" $OUTPUT"
 
 $FFMPEG_CMD
