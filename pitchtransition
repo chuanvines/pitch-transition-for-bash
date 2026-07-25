@@ -11,11 +11,27 @@ if [ "$FLAG" != "--pitch" ]; then
     exit 1
 fi
 
-# Verify that the input file exists to avoid ffprobe/ffmpeg errors
+# Verify that the input file exists
 if [ ! -f "$INPUT" ]; then
-    echo "Error: Input file '$INPUT' not found."
+    echo "ERROR: Input file '$INPUT' not found."
     exit 1
 fi
+
+# Extract file extension and convert to lowercase
+EXT="${INPUT##*.}"
+EXT=$(echo "$EXT" | tr '[:upper:]' '[:lower:]')
+
+# Check if the format is supported
+case "$EXT" in
+    mp3|wav|aac|ogg)
+        # Format is supported, continue
+        ;;
+    *)
+        # Format is unsupported, throw an error
+        echo "ERROR: Unsupported file format '$EXT'. Supported formats are: mp3, wav, aac, ogg."
+        exit 1
+        ;;
+esac
 
 # Fetch the exact duration of the input file using ffprobe
 d=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$INPUT")
@@ -30,7 +46,7 @@ for i in $(seq 0 0.01 $d); do
    echo "$i rubberband pitch 2^((($i/$d)*($end-$start)+$start)/12);"
 done >> pitchtransition.txt
 
-# Added quotes around the variables to prevent word splitting issues
+# Quotes around the variables prevent word splitting issues
 FFMPEG_CMD="ffmpeg -i \"$INPUT\" -af \"asendcmd=f=pitchtransition.txt,rubberband=phase=712923000\" \"$OUTPUT\""
 
 # Execute the command
