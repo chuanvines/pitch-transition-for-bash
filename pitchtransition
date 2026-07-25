@@ -26,10 +26,11 @@ while [[ "$#" -gt 0 ]]; do
             
             # Convert to cents (1 semitone = 100 cents)
             # We use the end value for the bend calculation
+            START_CENTS=$((START_SEMI * 100))
             END_CENTS=$((END_SEMI * 100))
             
             # Append this bend to the string
-            BEND_EFFECTS="$BEND_EFFECTS bend 0,$END_CENTS,$DURATION"
+            BEND_EFFECTS="$BEND_EFFECTS reverse bend 0,$START_CENTS,$DURATION reverse bend 0,$END_CENTS,$DURATION"
             
             shift 3
             ;;
@@ -40,7 +41,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Construct the final SoX command
-SOX_CMD="sox $INPUT $OUTPUT pad 0 0.1 $BEND_EFFECTS"
+SOX_CMD="sox $INPUT $OUTPUT pad 0 0 $BEND_EFFECTS"
 
 # Output the command
 echo "$SOX_CMD"
