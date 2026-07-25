@@ -7,26 +7,31 @@ END_SEMI="$5"    # 24
 
 # Detect if the --pitch flag is missing or incorrect
 if [ "$FLAG" != "--pitch" ]; then
-    echo "ERROR: The --pitch flag is required as the third argument. Example: ./pitchtransition input.wav output.wav --pitch 0 24"
+    echo "ERROR: The --pitch flag is required as the third argument."
     exit 1
 fi
 
-# Verify that the input file exists to avoid soxi errors
+# Verify that the input file exists to avoid ffprobe/ffmpeg errors
 if [ ! -f "$INPUT" ]; then
     echo "Error: Input file '$INPUT' not found."
     exit 1
 fi
 
-# Fetch the exact duration of the input file using soxi
-d=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $INPUT)
+# Fetch the exact duration of the input file using ffprobe
+d=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$INPUT")
 
 start=$START_SEMI
 end=$END_SEMI
+
+# Clear the file first in case it already exists from a previous run
+> pitchtransition.txt
 
 for i in $(seq 0 0.01 $d); do
    echo "$i rubberband pitch 2^((($i/$d)*($end-$start)+$start)/12);"
 done >> pitchtransition.txt
 
-FFMPEG_CMD="ffmpeg -i "$INPUT" -af "asendcmd=f=pitchtransition.txt,rubberband=phase=712923000" $OUTPUT"
+# Added quotes around the variables to prevent word splitting issues
+FFMPEG_CMD="ffmpeg -i \"$INPUT\" -af \"asendcmd=f=pitchtransition.txt,rubberband=phase=712923000\" \"$OUTPUT\""
 
-$FFMPEG_CMD
+# Execute the command
+eval $FFMPEG_CMD
