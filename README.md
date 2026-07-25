@@ -9,14 +9,14 @@ sed -i 's/\r$//' pitchtransition
 
 chmod +x pitchtransition
 
-eval $(./pitchtransition input.wav output.wav --pitch 0 24)
+./pitchtransition input.wav output.wav --pitch 0 24
 
 # Features:
 input audio
 
 output audio
 
---pitch (you can multiple pitches like: --pitch 0 24 --pitch 0 12)
+--pitch
 
 start_pitch
 
