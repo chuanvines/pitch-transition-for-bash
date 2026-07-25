@@ -18,8 +18,8 @@ output audio
 
 --pitch (you can multiple pitches like: --pitch 0 24 --pitch 0 12)
 
-start_pitch (WORK IN PROGRESS)
+start_pitch
 
 end_pitch
 
-# V0.9
+# V1
